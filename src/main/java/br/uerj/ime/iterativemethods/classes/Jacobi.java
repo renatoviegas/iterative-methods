@@ -1,27 +1,37 @@
 package br.uerj.ime.iterativemethods.classes;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import br.uerj.ime.iterativemethods.controller.FileController;
 import br.uerj.ime.iterativemethods.exception.ElementByMainDiagonalMatrixHasZeroException;
 import br.uerj.ime.iterativemethods.helper.HelperMatrix;
 import br.uerj.ime.iterativemethods.interfaces.IterativeMethods;
 
 public class Jacobi implements IterativeMethods {
 
-	private static final Logger logger = LoggerFactory.getLogger(FileController.class);
+	// private static final Logger logger =
+	// LoggerFactory.getLogger(FileController.class);
 	private static int STEP = 10;
 
+	private double A[][];
+	private double b[];
+	private int order;
+
+	public Jacobi(double A[][], double b[]) {
+		if (A == null || b == null)
+			throw new NullPointerException();
+
+		if (A.length != b.length) {
+			throw new IllegalArgumentException();
+		}
+
+		this.A = A;
+		this.b = b;
+		this.order = A.length;
+	}
+
 	@Override
-	public void calculate(Matrix matrix, double precision, int maxIterations) {
+	public void calculate(double precision, int maxIterations) {
 
-		int n = matrix.getOrder();
-
-		double A[][] = matrix.getMatrix();
-		double b[] = matrix.getConstants();
-		double previousResult[] = new double[n];
-		double currentResults[] = new double[n];
+		double previousResult[] = new double[this.order];
+		double currentResults[] = new double[this.order];
 		double delta, sum;
 		int iterations = 0;
 
@@ -31,55 +41,55 @@ public class Jacobi implements IterativeMethods {
 			new ElementByMainDiagonalMatrixHasZeroException(element);
 		}
 
-		
-		for (int i = 0; i < n; i++) {			
-			for (int j = 0; j < n; j++) System.out.print("[" + A[i][j] + "]  ");			
+		for (int i = 0; i < this.order; i++) {
+			for (int j = 0; j < this.order; j++)
+				System.out.print("[" + A[i][j] + "]  ");
 			System.out.println("[x" + i + "] = [" + b[i] + "]");
 		}
-		
+
 		System.out.println("");
 		System.out.println("Iniciando o cálculo utilizando o metódo de Jacobi com precisão: " + precision);
 
 		System.out.println("");
 		System.out.print("[" + ++iterations + "] ");
-		
-		for (int i = 0; i < n; i++) {
+
+		for (int i = 0; i < this.order; i++) {
 			previousResult[i] = b[i] / A[i][i];
 			System.out.print("(" + previousResult[i] + ")  ");
 		}
 
-		delta = calculateError(currentResults, previousResult, n);
+		delta = calculateError(currentResults, previousResult, this.order);
 		System.out.print(" [erro = " + delta);
-		
+
 		while (iterations < maxIterations) {
-			
+
 			System.out.print("[" + ++iterations + "] ");
-			
-			for (int i = 0; i < n; i++) {
+
+			for (int i = 0; i < this.order; i++) {
 				sum = b[i];
 				System.out.println("");
-				
-				for (int j = 0; j < n; j++)
-					if (i != j) sum -= (A[i][j] * previousResult[j]);
-				
-				
+
+				for (int j = 0; j < this.order; j++)
+					if (i != j)
+						sum -= (A[i][j] * previousResult[j]);
+
 				currentResults[i] = sum / A[i][i];
 				System.out.print("(" + currentResults[i] + ")  ");
-				
+
 			}
-			
+
 			if (iterations % STEP == 0) {
-				delta = calculateError(currentResults, previousResult, n);
+				delta = calculateError(currentResults, previousResult, this.order);
 				System.out.print(" [erro = " + delta);
-				
+
 				if (delta < precision) {
 					System.out.println("Sair");
 				}
 			}
-			
+
 			previousResult = currentResults.clone();
 		}
-		
+
 		HelperMatrix.print(currentResults);
 
 	}

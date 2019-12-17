@@ -26,6 +26,19 @@ public class Matrix {
 	
 	public double[] getConstants() {
 		return this.constants;
-	}
+	}	
 	
+	@Override
+	public String toString() {		
+		int n = this.matrix.length;
+		
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++)
+				System.out.print("[" + this.matrix[i][j] + "]  ");
+			System.out.print(" = [" + this.constants[i] + "]");
+			System.out.println("");
+		}
+		
+		return "";
+	}
 }

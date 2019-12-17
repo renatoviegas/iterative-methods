@@ -34,7 +34,9 @@
 		        	<div class="single-upload">
 		               	<h4>Realizar o cálculo com os seguintes métodos:</h4>
 		               	<label>Precisão desejada:</label>
-		               	<input type="number" step="0.01" value="0" min="0"/>
+		               	<input type="number" step="0.01" value="0.01" min="0" id="numPrecision" />
+		               	<label>Máximo de Iterações:</label>
+		               	<input type="number" step="10" value="100" min="0" max=10000 id="maxIterations" />
 		        		<button id="calc-jacobi" class="primary submit-btn" disabled>Jacobi</button>
 		        		<button id="calc-gauss-seidel" class="primary submit-btn" disabled>Gauss-Seidel</button>
 		        	</div>

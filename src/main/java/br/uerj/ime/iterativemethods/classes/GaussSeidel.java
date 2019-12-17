@@ -1,97 +1,84 @@
 package br.uerj.ime.iterativemethods.classes;
 
-import br.uerj.ime.iterativemethods.exception.ElementByMainDiagonalMatrixHasZeroException;
 import br.uerj.ime.iterativemethods.helper.HelperMatrix;
 import br.uerj.ime.iterativemethods.interfaces.IterativeMethods;
 
 public class GaussSeidel implements IterativeMethods {
 
+	private double A[][];
+	private double b[];
+	private int order;
+
+	public GaussSeidel(double A[][], double b[]) {
+		if (A == null || b == null)
+			throw new NullPointerException();
+
+		if (A.length != b.length) {
+			throw new IllegalArgumentException();
+		}
+
+		this.A = A;
+		this.b = b;
+		this.order = A.length;
+	}
+
 	@Override
-	public void calculate(Matrix matrix, double precision, int maxIterations) {
+	public void calculate(double precision, int maxIterations) {
 
-		double A[][] = matrix.getMatrix();
-		double b[] = matrix.getConstants();
-		int n = A.length;
+		double[] result = solveSystem(maxIterations);
 
-		double previousResult[] = new double[n];
-		double currentResults[] = new double[n];
-		int iterations = 0;
+		HelperMatrix.print(result);
 
-		// valida a matriz
-		int element = HelperMatrix.getElementWithZeroInDiagonalMain(A);
-		if (element > -1) {
-			new ElementByMainDiagonalMatrixHasZeroException(element);
+	}
+
+	private double[] solveSystem(int maxIterations) {
+
+		if (!converges()) {
+			System.err.println("A solução não é possível, pois a matriz não converge!");
 		}
 
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++)
-				System.out.print("[" + A[i][j] + "]  ");
-			System.out.println("[x" + i + "] = [" + b[i] + "]");
+		double x[] = initialize(new double[this.order]);
+		int k = 0;
+
+		while (k < maxIterations) {
+
+			for (int i = 0; i < this.order; i++) {
+				double x0 = 0;
+				for (int j = 0; j < this.order; j++)
+					if (i != j)
+						x0 += A[i][j] * x[j];
+				x[i] = (b[i] - x0) / A[i][i];
+			}
+
+			k++;
 		}
 
-		System.out.println("");
-		System.out.println("Iniciando o cálculo utilizando o metódo de Gauss-Seidel com precisão: " + precision);
+		return x;
+	}
 
-		System.out.println("");
+	private boolean converges() {
 
-		for (int i = 0; i < n; i++)
-			previousResult[i] = 0;
+		for (int i = 0; i < this.order; i++) {
 
-		while (true) {
+			double diagonal = Math.abs(A[i][i]);
+			double sum = 0;
 
-			iterations++;
+			for (int j = 0; j < this.order; j++)
+				if (i != j)
+					sum += Math.abs(A[i][j]);
 
-			for (int i = 0; i < n; i++) {
-
-				currentResults[i] = b[i];
-
-				for (int j = 0; j < n; j++) {
-
-					if (i > j) {
-						currentResults[i] -= A[i][j] * currentResults[j];
-					}
-
-					if (i < j) {
-						currentResults[i] -= A[i][j] * previousResult[j];
-					}
-				}
-
-				currentResults[i] /= A[i][i];
-			}
-
-			double error = 0;
-
-			for (int i = 0; i < n; i++) {
-
-				double errorTemp = 0;
-				for (int j = 0; j < n; j++) {
-					errorTemp += A[i][j] * currentResults[j];
-				}
-
-				error += Math.abs(errorTemp - b[i]);
-			}
-
-			if (error < precision) {
-				break;
-			}
-
-			previousResult = currentResults;
-
+			if (sum >= diagonal)
+				return false;
 		}
 
-		HelperMatrix.print(A);
-		HelperMatrix.print(previousResult);
-		System.out.println(iterations);
+		return true;
+	}
 
-		for (double[] a : A) {
-			double errorTemp = 0;
-			for (int j = 0; j < n; j++) {
-				errorTemp += a[j] * previousResult[j];
-			}
+	private double[] initialize(double[] m) {
+		for (int i = 0; i < this.order; i++)
+			m[i] = 0;
 
-			System.out.print(errorTemp + " ");
-		}
-
+		return m;
 	}
 
 }

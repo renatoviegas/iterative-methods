@@ -38,18 +38,18 @@ public class HelperMatrix {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++)
 				System.out.print("[" + m[i][j] + "]  ");
+			System.out.println("");
 		}
 	}
 
 	public static void print(double m[]) {
 
 		int n = m.length;
-		
-		System.out.println("");
-		for (int i = 0; i < n; i++) {
-				System.out.print("[" + m[i] + "]  ");
-		}
-	}
 
+		for (int i = 0; i < n; i++) {
+			System.out.print("[" + m[i] + "]  ");
+		}
+		System.out.println("");
+	}
 
 }
